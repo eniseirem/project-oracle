@@ -31,7 +31,7 @@ export const ORACLE_MESSAGES_SEED: OracleMessage[] = [
     recipientPlayerId: null,
     phase: 4,
     content:
-      "ORACLE // PRIVATE MESSAGE\nAsk CORE CHARACTER 02 where they were at 21:13.\nDo not explain why.",
+      "ORACLE // PRIVATE MESSAGE\nAsk THE PARTNER where they were at 21:13.\nDo not explain why.",
     sentAt: new Date().toISOString(),
   },
   {
@@ -80,6 +80,19 @@ export const ORACLE_MESSAGES_SEED: OracleMessage[] = [
     content:
       "ORACLE PREDICTION #002.\nONE PERSON IN THIS ROOM\nIS PROTECTING THE KILLER.",
     confidence: "87.4%",
+    sentAt: new Date().toISOString(),
+  },
+  // THE SLIP — the one real tell pointing at whoever controls ORACLE (not the
+  // killer). Deniable as flavor text to most players, a real tell to anyone
+  // who's noticed this character's own verbal tics earlier in the night.
+  // Send this as-is, as GLOBAL, at phase 7 — don't announce it.
+  {
+    id: "msg-09",
+    timestamp: "22:52",
+    type: "GLOBAL",
+    phase: 7,
+    content:
+      "ORACLE // SELF-DIAGNOSTIC\nVOCABULARY DRIFT DETECTED.\nTHIS IS NOT HOW I USUALLY SPEAK.\nIT IS HOW SOMEONE ELSE DOES.",
     sentAt: new Date().toISOString(),
   },
 ];
