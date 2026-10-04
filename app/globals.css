@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Oxanium", ui-sans-serif, system-ui;
+}
+
+html,
+body {
+  background-color: #07080a;
+  color: #e7e4df;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* subtle vignette + noise-ish grain, applied once at the root */
+.oracle-shell {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 50% -10%, rgba(178, 48, 47, 0.08), transparent 60%),
+    linear-gradient(180deg, #07080a 0%, #090a0c 100%);
+}
+
+.oracle-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.015) 0px,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+.scanline-sweep {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 40vh;
+  pointer-events: none;
+  z-index: 49;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(178, 48, 47, 0.05) 45%,
+    rgba(178, 48, 47, 0.09) 50%,
+    rgba(178, 48, 47, 0.05) 55%,
+    transparent 100%
+  );
+  animation: scan 9s linear infinite;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  background: currentColor;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s steps(1) infinite;
+}
+
+.glitch-on-mount {
+  animation: glitch 0.22s linear;
+}
+
+.oracle-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #23262b, transparent);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #23262b;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
