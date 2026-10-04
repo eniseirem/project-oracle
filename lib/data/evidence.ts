@@ -3,6 +3,15 @@ import type { EvidenceItem } from "@/lib/types";
 // PLACEHOLDER evidence. `unlockPhase` is only used to seed the initial
 // status (LOCKED vs AVAILABLE) — after that, status is entirely under the
 // Game Master's control from /host.
+//
+// VENUE RULE: this game is played in a public bar the host doesn't control,
+// so no evidence should ever require players to physically search the venue
+// for a hidden object (a planted phone, a note taped under a table, etc.) —
+// that doesn't work in a space full of other patrons and staff. Every clue
+// here is either purely informational (delivered through the app — a log,
+// a call record, a recording transcript) or something the Game Master hands
+// a player directly (a printed card, a photo). Keep new evidence the same
+// way.
 export const EVIDENCE_SEED: EvidenceItem[] = [
   {
     id: "001",
@@ -50,9 +59,9 @@ export const EVIDENCE_SEED: EvidenceItem[] = [
   },
   {
     id: "005",
-    title: "THE SECOND PHONE",
+    title: "FINAL CALL LOG",
     description:
-      "A second phone registered to Subject Zero, found powered on and unlocked. Its last outgoing call was never answered.",
+      "Subject Zero's carrier records one last outgoing call at 21:09, lasting four seconds. It was never answered. The number has no name attached to it.",
     visibility: "PUBLIC",
     status: "LOCKED",
     unlockPhase: 7,

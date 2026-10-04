@@ -214,10 +214,10 @@ export const CHARACTERS: Character[] = [
     costumeSuggestion: "Elegant all-black outfit, no visible branding.",
     publicBio: "A plus-one nobody quite remembers inviting.",
     secret: "You are not who your name tag says you are.",
-    whatYouKnow: "You know Subject Zero kept a second phone in the coat room.",
+    whatYouKnow: "You know Subject Zero was quietly paying for a second phone line that never showed up on any shared bill.",
     objectives: [
       { type: "PRIMARY", text: "Keep your real identity from being discovered." },
-      { type: "SECRET", text: "Find the second phone before the Game Master does." },
+      { type: "SECRET", text: "Find out who else knows about the second line before the Game Master does." },
       { type: "SOCIAL", text: "Get invited into a private conversation you weren't part of." },
     ],
     relationships: [
@@ -243,8 +243,8 @@ export const CHARACTERS: Character[] = [
     phaseReveals: [
       {
         phase: 6,
-        title: "THE SECOND PHONE",
-        content: "You hear that someone found a phone in the coat room. It wasn't you.",
+        title: "THE SECOND LINE",
+        content: "Someone just mentioned, casually, that they've traced the second line to a number that's still active tonight. It wasn't you who found it.",
       },
     ],
     importantClues: [{ id: "clue-ext-02-a", text: "Is using a name that isn't theirs." }],
