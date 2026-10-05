@@ -3,7 +3,7 @@ import type { Character } from "@/lib/types";
 // ============================================================================
 // PROJECT ORACLE — real cast, draft 1
 // ----------------------------------------------------------------------------
-// 12 CORE + 8 EXTENDED + 10 OPTIONAL = 30 total. Names are placeholder personas
+// 11 CORE + 9 EXTENDED + 10 OPTIONAL = 30 total. Names are placeholder personas
 // on purpose (THE PARTNER, THE ARCHITECT, ...) — the host is assigning these to
 // real guests on the night itself and name-matching afterward, not before, so
 // nothing here assumes a real identity beyond the handful of personality seeds
@@ -252,31 +252,6 @@ export const CHARACTERS: Character[] = [
     importantClues: [{ id: "clue-core-08-a", text: "Can recover one more detail from the voice memo than anyone else." }],
   },
   {
-    id: "core-09",
-    name: "THE EX",
-    tier: "CORE",
-    factionId: "faction-outsiders",
-    costumeSuggestion: "Deliberately a little overdressed, like they had something to prove tonight.",
-    accentColor: { name: "Wine", hex: "#5c1f2e" },
-    publicBio: "Used to date Subject Zero. It ended badly enough that people are surprised they came tonight at all.",
-    secret: "You almost didn't come tonight. You're still not sure why you did.",
-    whatYouKnow: "You know Subject Zero reached out to you last month, out of nowhere, asking if you still had old files from \"the project\" — you didn't ask which one.",
-    objectives: [
-      { type: "PRIMARY", text: "Figure out which old project Subject Zero meant." },
-      { type: "SECRET", text: "Keep people from assuming you came back for a reason that isn't true." },
-      { type: "SOCIAL", text: "Have one real conversation tonight that isn't about the breakup." },
-    ],
-    relationships: [
-      { characterId: "core-02", label: "Never got along.", note: "The feeling is mutual and old.", revealPhase: 0 },
-      { characterId: "core-10", label: "Subject Zero's family.", note: "They were kinder to you than you expected, once.", revealPhase: 4 },
-      { characterId: "core-04", label: "A name you half-recognize from years ago.", note: "You can't place from where.", revealPhase: 8 },
-    ],
-    phaseReveals: [
-      { phase: 6, title: "THE OLD REQUEST", content: "You remember now — the files Subject Zero asked about were from a research project, not your relationship. That tracks less than you'd like." },
-    ],
-    importantClues: [{ id: "clue-core-09-a", text: "Subject Zero quietly asked them for old research files last month." }],
-  },
-  {
     id: "core-10",
     name: "THE SIBLING",
     tier: "CORE",
@@ -293,7 +268,6 @@ export const CHARACTERS: Character[] = [
     ],
     relationships: [
       { characterId: "core-02", label: "You've never fully trusted him.", note: "Something about how he talks about the business.", revealPhase: 0 },
-      { characterId: "core-09", label: "Subject Zero's ex.", note: "Kinder to them than most people expect you to be.", revealPhase: 4 },
       { characterId: "core-04", label: "An old friend of your sibling's.", note: "You've met her maybe twice, years apart.", revealPhase: 6 },
     ],
     phaseReveals: [
@@ -441,7 +415,6 @@ export const CHARACTERS: Character[] = [
     ],
     relationships: [
       { characterId: "core-12", label: "Hired through her, technically.", note: "She's been checking in on you a lot tonight.", revealPhase: 4 },
-      { characterId: "core-09", label: "Took a candid of them earlier that felt oddly tense.", note: "", revealPhase: 6 },
     ],
     phaseReveals: [
       { phase: 8, title: "THE 21:10 PHOTO", content: "You finally look at the photo. It's blurry, but there's a figure near the private room's door, right before everything happened — dressed head to toe in muted grey, nothing that stands out. Which is somehow the strangest part." },

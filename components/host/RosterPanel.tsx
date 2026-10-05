@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { hostFetch, hostPost } from "@/lib/client/hostApi";
+import { TIER_LABELS, TIER_ORDER } from "@/lib/tierLabels";
 
 interface RosterAssignment {
   username: string;
   displayUsername: string;
   characterId: string | null;
 }
-
-const TIER_ORDER = ["CORE", "EXTENDED", "OPTIONAL"];
 
 export function RosterPanel({ characters }: { characters: any[] }) {
   const [assignments, setAssignments] = useState<RosterAssignment[]>([]);
@@ -83,7 +82,7 @@ export function RosterPanel({ characters }: { characters: any[] }) {
       >
         <option value="">Character…</option>
         {TIER_ORDER.map((tier) => (
-          <optgroup key={tier} label={tier}>
+          <optgroup key={tier} label={TIER_LABELS[tier]}>
             {characters
               .filter((c) => c.tier === tier)
               .map((c) => (

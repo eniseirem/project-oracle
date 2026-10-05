@@ -5,6 +5,8 @@ import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
 import { hostPost } from "@/lib/client/hostApi";
+import { TIER_LABELS } from "@/lib/tierLabels";
+import type { CharacterTier } from "@/lib/types";
 
 const TIER_COLOR: Record<string, string> = {
   CORE: "text-oracle-redBright",
@@ -57,7 +59,11 @@ export function PlayerTable({
                 </p>
                 <p className="text-oracle-textDim text-xs mt-0.5">{p.characterName}</p>
                 <div className="flex items-center gap-2 mt-1 text-[10px] uppercase tracking-widest">
-                  {p.tier && <span className={TIER_COLOR[p.tier]}>{p.tier}</span>}
+                  {p.tier && (
+                    <span className={TIER_COLOR[p.tier]}>
+                      {TIER_LABELS[p.tier as CharacterTier]}
+                    </span>
+                  )}
                   {faction && <span className="text-oracle-textFaint">{faction.name}</span>}
                 </div>
               </div>
@@ -119,7 +125,10 @@ export function PlayerTable({
                       onClick={() => act(p.id, "REASSIGN", c.id)}
                       className="text-left text-xs px-3 py-2 rounded-sm bg-oracle-panelAlt hover:bg-oracle-border text-oracle-text"
                     >
-                      {c.name} <span className="text-oracle-textFaint">— {c.tier}</span>
+                      {c.name}{" "}
+                      <span className="text-oracle-textFaint">
+                        — {TIER_LABELS[c.tier as CharacterTier]}
+                      </span>
                     </button>
                   ))}
                 </div>

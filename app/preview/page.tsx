@@ -5,6 +5,8 @@ import Link from "next/link";
 import { OracleBrand } from "@/components/ui/OracleBrand";
 import { Button } from "@/components/ui/Button";
 import { Expandable } from "@/components/ui/Expandable";
+import { TIER_LABELS } from "@/lib/tierLabels";
+import type { CharacterTier } from "@/lib/types";
 
 interface PreviewCharacter {
   id: string;
@@ -105,7 +107,7 @@ export default function PreviewPage() {
               {c.name}
             </h1>
             <p className="text-oracle-textFaint text-[11px] uppercase tracking-widest mt-1">
-              {c.tier} SUBJECT
+              {TIER_LABELS[c.tier as CharacterTier]}
             </p>
             <p className="text-oracle-amber text-[11px] uppercase tracking-widest mt-2">
               Costume: {c.costumeSuggestion}

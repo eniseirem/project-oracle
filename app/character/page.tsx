@@ -6,6 +6,8 @@ import { usePlayerState } from "@/lib/client/useOracleState";
 import { TopBar } from "@/components/ui/TopBar";
 import { Expandable } from "@/components/ui/Expandable";
 import { AnnouncementOverlay } from "@/components/AnnouncementOverlay";
+import { TIER_LABELS } from "@/lib/tierLabels";
+import type { CharacterTier } from "@/lib/types";
 
 export default function CharacterPage() {
   const router = useRouter();
@@ -31,7 +33,7 @@ export default function CharacterPage() {
             {c.name}
           </h1>
           <p className="text-oracle-textFaint text-[11px] uppercase tracking-widest mt-1">
-            {c.tier} SUBJECT
+            {TIER_LABELS[c.tier as CharacterTier]}
           </p>
           <p className="text-oracle-amber text-[11px] uppercase tracking-widest mt-2">
             Costume: {c.costumeSuggestion}
