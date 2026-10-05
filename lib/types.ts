@@ -42,8 +42,11 @@ export interface Relationship {
   revealPhase: number; // relationship becomes visible at/after this phase
 }
 
+// BONUS objectives are small, just-for-fun side challenges (easter eggs,
+// in-jokes) — they award points like anything else, but are never required
+// and never touch the actual mystery.
 export interface Objective {
-  type: "PRIMARY" | "SECRET" | "SOCIAL";
+  type: "PRIMARY" | "SECRET" | "SOCIAL" | "BONUS";
   text: string;
 }
 
@@ -79,6 +82,33 @@ export interface Character {
   importantClues: ImportantClue[];
 }
 
+// A player self-claims an objective once they believe they've actually done
+// it. `objectiveKey` is `${characterId}:${objectiveType}` (stable, since a
+// character has exactly one objective per type — no need to hand-id every
+// objective in lib/data/*). `points` is locked in at the moment of the
+// claim (base value for the type + an early-claim bonus based on the game
+// phase at that moment — see computeObjectivePoints in lib/store.ts), so it
+// never silently changes later even if the scoring formula does. A claim is
+// one-directional from the player's side — they can't un-claim it — but the
+// Game Master can set `revoked` from the host dashboard if a claim turns
+// out to be bogus; a revoked claim is excluded from totals.
+export interface ObjectiveCompletion {
+  objectiveKey: string;
+  type: Objective["type"];
+  phaseCompleted: number;
+  points: number;
+  revoked: boolean;
+  completedAt: string;
+}
+
+// The two true culprits for a scenario, used only server-side to score the
+// final accusation (lib/store.ts) — never sent to any player or host payload
+// directly. Lives in lib/data/characters.ts (and lib/data/testScenario/).
+export interface GameSolution {
+  killerCharacterId: string;
+  mastermindCharacterId: string;
+}
+
 export interface Player {
   id: string;
   realName: string;
@@ -89,6 +119,7 @@ export interface Player {
   lastSeenEvidenceCount: number;
   lastSeenOracleCount: number;
   completedObjectives: string[]; // objective text keys the player checked off, cosmetic only
+  objectiveCompletions: ObjectiveCompletion[]; // the real, scored claims
 }
 
 export interface EvidenceItem {

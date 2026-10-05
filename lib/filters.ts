@@ -1,5 +1,5 @@
 import type { Character, EvidenceItem, GameState, Player, PhaseReveal, Relationship } from "@/lib/types";
-import { isEvidenceVisibleToPlayer, isMessageVisibleToPlayer } from "@/lib/store";
+import { isEvidenceVisibleToPlayer, isMessageVisibleToPlayer, computeLeaderboard } from "@/lib/store";
 
 export interface PublicEvidenceCard {
   id: string;
@@ -92,6 +92,7 @@ export function buildPlayerPayload(state: GameState, player: Player) {
       realName: player.realName,
       status: player.status,
       completedObjectives: player.completedObjectives,
+      objectiveCompletions: player.objectiveCompletions ?? [],
     },
     character: character
       ? {
@@ -154,5 +155,6 @@ export function buildHostPayload(state: GameState) {
     messagePresets: state.messagePresets,
     events: state.events,
     votes: state.votes,
+    scoreboard: computeLeaderboard(state),
   };
 }

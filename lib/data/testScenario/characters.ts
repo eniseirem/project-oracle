@@ -130,3 +130,10 @@ export const CHARACTERS: Character[] = [
     importantClues: [{ id: "clue-test-04-a", text: "Noticed the scoring app's glitches always favor the same handful of people." }],
   },
 ];
+
+// Server-side only (see lib/store.ts) — same shape as the real game's
+// SOLUTION export in lib/data/characters.ts.
+export const SOLUTION = {
+  killerCharacterId: "test-01",
+  mastermindCharacterId: "test-02",
+};

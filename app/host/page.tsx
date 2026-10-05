@@ -11,6 +11,7 @@ import { MessageComposer } from "@/components/host/MessageComposer";
 import { EvidencePanel } from "@/components/host/EvidencePanel";
 import { EventTriggers } from "@/components/host/EventTriggers";
 import { EmergencyPanel } from "@/components/host/EmergencyPanel";
+import { ScorePanel } from "@/components/host/ScorePanel";
 import { clearHostKey } from "@/lib/client/session";
 
 export default function HostPage() {
@@ -119,6 +120,10 @@ export default function HostPage() {
           <h2 className="font-display text-xs uppercase tracking-[0.2em] text-oracle-textDim mb-2">
             Votes Cast: {data.votes.length} / {data.players.filter((p: any) => p.status === "ACTIVE").length}
           </h2>
+        </section>
+
+        <section>
+          <ScorePanel scoreboard={data.scoreboard ?? []} onChanged={refresh} />
         </section>
 
         <section>

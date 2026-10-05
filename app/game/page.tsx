@@ -88,6 +88,17 @@ export default function GamePage() {
               </span>
             </Link>
           )}
+
+          {data.game.revealOpen && (
+            <Link
+              href="/leaderboard"
+              className="flex items-center justify-center w-full bg-oracle-amber/90 border border-oracle-amber rounded-sm px-5 py-4 active:scale-[0.99]"
+            >
+              <span className="font-display uppercase tracking-wide text-sm text-black">
+                Final Standings
+              </span>
+            </Link>
+          )}
         </div>
 
         <button

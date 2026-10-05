@@ -12,10 +12,18 @@ import type { Character } from "@/lib/types";
 // and THE ARCHITECT specifically.
 //
 // THE SOLUTION (see the project doc "project-oracle-story-bible.md" for the
-// full writeup): THE PARTNER is the killer (real, mundane motive — a money
-// dispute). THE ARCHITECT is the one who actually controls ORACLE (she built
-// it in secret years ago and never stopped). Neither knows the other's role.
-// Keep that split if you reshuffle anything below.
+// full writeup, and the SOLUTION export at the bottom of this file): THE
+// PARTNER is the killer (real, mundane motive — a money dispute). THE
+// RESEARCHER is the one who actually controls ORACLE — she found an
+// abandoned prototype The Architect and Subject Zero walked away from years
+// ago, and has been secretly running and expanding it for two years. THE
+// ARCHITECT really did co-build that original prototype, but has had
+// nothing to do with it since — she's an innocent, if suspicious-looking,
+// red herring. Neither THE PARTNER nor THE RESEARCHER knows about the
+// other. This was deliberately moved off THE ARCHITECT (who's seeded on a
+// real friend's personality) so that none of the few characters carrying
+// personal, real-life touches is one of the two actual culprits — keep
+// that split if you reshuffle anything below.
 //
 // VENUE RULE carried over from evidence.ts: nothing here requires searching the
 // bar for a hidden object. Every secret/clue is either informational (told
@@ -34,24 +42,28 @@ export const CHARACTERS: Character[] = [
     publicBio:
       "A senior researcher on Subject Zero's team. Precise, guarded, rarely seen without a notebook.",
     secret:
-      "You altered a timestamp on an internal log the night before the party. You are not sure anyone noticed.",
+      "Two years ago you found an old, abandoned AI prototype buried in a shared drive — built years earlier by two people who'd clearly given up on it. You didn't give up. You've been quietly running and expanding it ever since. ORACLE is yours now, not whoever originally wrote it. You altered a timestamp on an internal log the night before the party to cover one trace of that work, and you're not sure anyone noticed.",
     whatYouKnow:
       "You know Subject Zero received a phone call around 20:40 that visibly unsettled them.",
     objectives: [
       { type: "PRIMARY", text: "Discover who accessed the private room at 21:13." },
-      { type: "SECRET", text: "Find out why you were asked to alter that timestamp before anyone traces it back to you." },
+      { type: "SECRET", text: "Keep anyone from tracing ORACLE's real codebase back to that old, abandoned prototype — or to you." },
       { type: "SOCIAL", text: "Convince two people that ORACLE may be more than just software." },
     ],
     relationships: [
       { characterId: "core-02", label: "Former colleague.", note: "You don't fully trust her.", revealPhase: 0 },
-      { characterId: "extended-01", label: "Reports to you.", note: "You think they're hiding something.", revealPhase: 0 },
-      { characterId: "core-04", label: "You've met a handful of times.", note: "Something about her always feels rehearsed.", revealPhase: 6 },
+      { characterId: "extended-01", label: "Reports to you.", note: "You gave them an instruction tonight you're glad they didn't question.", revealPhase: 0 },
+      { characterId: "core-04", label: "You've met a handful of times.", note: "Something about her always feels rehearsed. You'd never say that out loud, given what you're hiding yourself.", revealPhase: 6 },
     ],
     phaseReveals: [
       { phase: 4, title: "A SECOND LOG ENTRY", content: "You find a second, unaltered copy of the log you edited. Someone backed it up before you touched it." },
       { phase: 6, title: "THE CALL", content: "You recognize the ringtone from the 20:40 call — it matches a phone you've seen in this room tonight." },
+      { phase: 8, title: "THE OLD PROTOTYPE", content: "You've seen this exact phrasing before — in the files you found two years ago. You know exactly whose work ORACLE started as, and that they have no idea you're the one who's been running it since." },
     ],
-    importantClues: [{ id: "clue-core-01-a", text: "Edited the 20:48 log entry." }],
+    importantClues: [
+      { id: "clue-core-01-a", text: "Edited the 20:48 log entry to cover her tracks." },
+      { id: "clue-core-01-b", text: "Secretly found and has been running an abandoned AI prototype for two years — this is what ORACLE actually is now." },
+    ],
   },
   {
     id: "core-02",
@@ -118,13 +130,13 @@ export const CHARACTERS: Character[] = [
     publicBio:
       "An old friend from Subject Zero's grad school days. Does something with AI nobody quite understands, and doesn't explain it when asked twice.",
     secret:
-      "You built ORACLE's original prototype with Subject Zero years ago, and never stopped developing it after she walked away from the project. You've been running it in secret for two years. Three days ago, she found the live dashboard and gave you an ultimatum: shut it down tonight, or she tells everyone.",
+      "Years ago, you and Subject Zero built an early prototype of what's now called ORACLE together, in grad school. You both walked away from it when the funding fell through — or so you thought. Tonight, something about the way ORACLE talks feels unsettlingly like your old code, down to specific phrasing choices only you would make. You didn't touch it. You have no idea who did.",
     whatYouKnow:
-      "You know ORACLE was never supposed to have real stakes tonight. Subject Zero's own \"launch\" forced your hand.",
+      "You know your old prototype's source files sat on a shared drive that at least a dozen people have had access to over the years.",
     objectives: [
-      { type: "PRIMARY", text: "Keep anyone from connecting you to ORACLE's early research." },
-      { type: "SECRET", text: "Find out how much Subject Zero told other people before she died." },
-      { type: "SOCIAL", text: "Get someone to describe ORACLE's \"personality\" back to you without realizing they're describing your own writing." },
+      { type: "PRIMARY", text: "Figure out who's been quietly running your old, abandoned code without telling you." },
+      { type: "SECRET", text: "Decide whether admitting you co-built an early ORACLE prototype makes you look more suspicious, not less." },
+      { type: "SOCIAL", text: "Get someone to describe ORACLE's \"personality\" back to you without realizing they're describing your own old writing." },
     ],
     relationships: [
       { characterId: "extended-02", label: "Your partner.", note: "He came tonight to support you. He has no idea what he's actually walked into.", revealPhase: 0 },
@@ -135,7 +147,7 @@ export const CHARACTERS: Character[] = [
     phaseReveals: [
       { phase: 7, title: "VOCABULARY DRIFT", content: "ORACLE just said something in a phrasing that is unmistakably, uncomfortably yours. You hope nobody else clocked it." },
     ],
-    importantClues: [{ id: "clue-core-04-a", text: "Co-built ORACLE's original prototype years ago." }, { id: "clue-core-04-b", text: "Dresses in deliberately unremarkable monochrome grey — nothing anyone thinks to describe." }],
+    importantClues: [{ id: "clue-core-04-a", text: "Co-built an early, abandoned ORACLE prototype years ago — and hasn't touched it since." }, { id: "clue-core-04-b", text: "Dresses in deliberately unremarkable monochrome grey — nothing anyone thinks to describe." }],
   },
   {
     id: "core-05",
@@ -144,7 +156,8 @@ export const CHARACTERS: Character[] = [
     factionId: "faction-outsiders",
     costumeSuggestion: "Flowing dark layers, a well-worn tarot deck visibly on hand all night.",
     accentColor: { name: "Deep Violet", hex: "#4a2f55" },
-    publicBio: "Reads tarot at every party she's invited to, and is unnervingly good at it.",
+    publicBio:
+      "Reads tarot at every party she's invited to, and is unnervingly good at it. Watches an unreasonable amount of Korean dramas, and it shows — the odd \"aigoo\" or \"daebak\" slips out without her noticing.",
     secret:
       "You did a reading for Subject Zero earlier this week that landed closer to tonight than you'd like to admit — Death, the Tower reversed, nothing you said to soften it.",
     whatYouKnow: "You know Subject Zero asked you, half-joking, \"what if something I built turned on me?\" two days ago.",
@@ -155,6 +168,7 @@ export const CHARACTERS: Character[] = [
     ],
     relationships: [
       { characterId: "core-06", label: "Your apprentice.", note: "Enthusiastic. Wrong, often. You let her keep trying.", revealPhase: 0 },
+      { characterId: "extended-09", label: "Your plus-one.", note: "They came to support you tonight. They have no idea what they've walked into.", revealPhase: 0 },
       { characterId: "core-02", label: "Acquaintance.", note: "He asked for a reading once and didn't like the answer.", revealPhase: 2 },
       { characterId: "optional-04", label: "Takes you far too seriously.", note: "You find it a little exhausting.", revealPhase: 4 },
     ],
@@ -218,7 +232,8 @@ export const CHARACTERS: Character[] = [
     factionId: "faction-inner-circle",
     costumeSuggestion: "Headphones around the neck all night, practical dark clothing.",
     accentColor: { name: "Gunmetal", hex: "#3a3d42" },
-    publicBio: "Works in data, specifically the kind nobody can explain at a party without losing the room.",
+    publicBio:
+      "Works in data, specifically the kind nobody can explain at a party without losing the room. If \"Crazy Ex-Girlfriend\" comes up, don't expect her to stop talking for a while — she has Opinions, and probably a Spotify playlist to prove it.",
     secret: "You're the only person here who can actually clean up corrupted audio, and everyone is about to find that out.",
     whatYouKnow: "You know that whatever recovered the voice memo evidence missed something — you can hear one more word in it than the transcript shows.",
     objectives: [
@@ -353,7 +368,7 @@ export const CHARACTERS: Character[] = [
     ],
     relationships: [
       { characterId: "core-01", label: "Reports to you.", note: "", revealPhase: 0 },
-      { characterId: "core-04", label: "Gave you an instruction tonight you didn't question.", note: "You've started to wonder if you should have.", revealPhase: 6 },
+      { characterId: "core-01", label: "Gave you an instruction tonight you didn't question.", note: "You've started to wonder if you should have.", revealPhase: 6 },
     ],
     phaseReveals: [
       { phase: 4, title: "THE INSTRUCTION", content: "The message telling you to erase the file came from an internal number, not an external one." },
@@ -469,6 +484,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Decide whether what you saw matters now." },
       { type: "SECRET", text: "Figure out if you'd even recognize that visitor again in this room." },
       { type: "SOCIAL", text: "Get someone else to bring up the topic first so you don't have to." },
+      { type: "BONUS", text: "Casually work the phrase \"streets ahead\" into a sentence where it makes no sense." },
     ],
     relationships: [
       { characterId: "core-10", label: "Waves hello in the hallway, nothing more.", note: "", revealPhase: 4 },
@@ -486,7 +502,8 @@ export const CHARACTERS: Character[] = [
     factionId: "faction-inner-circle",
     costumeSuggestion: "Family resemblance to The Sibling, dressed a little more casually.",
     accentColor: { name: "Pale Gold", hex: "#c2b280" },
-    publicBio: "Subject Zero's cousin. Close as kids, drifted apart as adults, trying to reconnect tonight.",
+    publicBio:
+      "Subject Zero's cousin. Close as kids, drifted apart as adults, trying to reconnect tonight. Half the family still calls them \"Captain\" as an old joke about always rallying people into group plans — and they will eat an unreasonable amount of meat tonight if any is within reach.",
     secret: "You borrowed money from Subject Zero two years ago and never paid it back. Nobody else in the family knows.",
     whatYouKnow: "You know Subject Zero never brought it up again, not once, which somehow made it worse.",
     objectives: [
@@ -522,6 +539,30 @@ export const CHARACTERS: Character[] = [
     ],
     phaseReveals: [],
     importantClues: [{ id: "clue-ext-08-a", text: "Knows The Fixer has been unusually busy this week." }],
+  },
+
+  {
+    id: "extended-09",
+    name: "THE TAROT READER'S PLUS-ONE",
+    tier: "EXTENDED",
+    factionId: "faction-outsiders",
+    costumeSuggestion: "Whatever you'd actually wear tonight — nothing required.",
+    accentColor: { name: "Soft Plum", hex: "#6a4a6e" },
+    publicBio:
+      "Came tonight with The Tarot Reader. Doesn't know most of these people, and is perfectly happy to just follow her lead all night.",
+    secret:
+      "You've been quietly checking your phone all night, waiting to hear back about a job offer. It has nothing to do with anything else going on tonight.",
+    whatYouKnow: "You know The Tarot Reader has seemed quieter than usual tonight, and it's not like her.",
+    objectives: [
+      { type: "PRIMARY", text: "Try to actually learn two new names tonight." },
+      { type: "SECRET", text: "Check your phone without making it obvious you're waiting on something." },
+      { type: "SOCIAL", text: "Get through the night without anyone asking you a trivia question about tarot you can't answer." },
+    ],
+    relationships: [
+      { characterId: "core-05", label: "You're here with her tonight.", note: "You don't know most of these people, but you know her well enough.", revealPhase: 0 },
+    ],
+    phaseReveals: [],
+    importantClues: [{ id: "clue-ext-09-a", text: "Came as The Tarot Reader's plus-one — otherwise unconnected to tonight." }],
   },
 
   // -------------------------------------------------------------- OPTIONAL --
@@ -563,6 +604,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Figure out who actually likes who in this group, fast." },
       { type: "SECRET", text: "Don't let anyone realize how little you actually know." },
       { type: "SOCIAL", text: "Get properly \"adopted\" by the group before the night's over." },
+      { type: "BONUS", text: "Slip the phrase \"cool cool cool\" into a normal conversation without anyone reacting to it." },
     ],
     relationships: [
       { characterId: "core-06", label: "Has appointed themselves your guide tonight.", note: "You didn't ask for this, but it's kind of nice.", revealPhase: 2 },
@@ -670,6 +712,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Remember exactly who was missing from the room during that ninety-second gap." },
       { type: "SECRET", text: "Figure out why you stopped playing right then — was it you, or did something make you stop?" },
       { type: "SOCIAL", text: "Get a request tonight for a song you actually like." },
+      { type: "BONUS", text: "Get someone to say \"six seasons and a movie\" out loud tonight, on purpose or not." },
     ],
     relationships: [
       { characterId: "extended-03", label: "Works the same events often.", note: "Friendly, professional shorthand.", revealPhase: 2 },
@@ -693,6 +736,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Figure out who called your roommate two nights ago." },
       { type: "SECRET", text: "Decide whether to bring this up in front of other people tonight." },
       { type: "SOCIAL", text: "Get your roommate to actually tell you what's going on, for once." },
+      { type: "BONUS", text: "Get someone to agree to \"Troy and Abed in the morning\" without explaining what that means." },
     ],
     relationships: [
       { characterId: "core-02", label: "Your roommate.", note: "You've never seen them this on edge before.", revealPhase: 2 },
@@ -748,3 +792,10 @@ export function getCharacter(id: string | null | undefined): Character | undefin
   if (!id) return undefined;
   return CHARACTERS.find((c) => c.id === id);
 }
+
+// Server-side only (see lib/store.ts) — never sent to any player or host
+// payload directly. See the big comment at the top of this file for why.
+export const SOLUTION = {
+  killerCharacterId: "core-02",
+  mastermindCharacterId: "core-01",
+};

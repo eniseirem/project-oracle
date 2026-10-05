@@ -58,6 +58,11 @@ export default function CharacterPage() {
 
         <Expandable title="What You Know">{c.whatYouKnow}</Expandable>
 
+        <p className="text-oracle-textFaint text-[10px] uppercase tracking-widest text-center">
+          your objectives (next tab) are worth real points — claim them the moment you've
+          actually done them, the earlier the better. final scores reveal at the end, by name.
+        </p>
+
         <Expandable title="People You Know">
           {c.relationships.length === 0
             ? "No known connections yet. Check back as the night continues."

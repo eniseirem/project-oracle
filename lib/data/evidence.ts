@@ -68,4 +68,20 @@ export const EVIDENCE_SEED: EvidenceItem[] = [
     authenticity: "UNVERIFIED",
     sentToPlayerIds: [],
   },
+  {
+    id: "006",
+    title: "A SINGLE LEGO BRICK",
+    description:
+      "A single LEGO brick, sitting somewhere it has no business being. It doesn't match anything else here — some mysteries just don't have an answer.",
+    // Entirely optional, for-fun flavor evidence — NOT a real clue to the
+    // mystery. The Game Master can make this a literal physical object: a
+    // real LEGO brick handed directly to a player, or left somewhere
+    // findable. If you don't bother with it, nothing in the game depends
+    // on it — leave it LOCKED and never release it.
+    visibility: "PRIVATE",
+    status: "LOCKED",
+    unlockPhase: 5,
+    authenticity: "DISPUTED",
+    sentToPlayerIds: [],
+  },
 ];

@@ -81,6 +81,9 @@ export default function VotePage() {
         <p className="text-center font-display uppercase tracking-widest text-oracle-redBright text-sm">
           Who do you believe is behind what happened tonight?
         </p>
+        <p className="text-center text-oracle-textFaint text-[10px] uppercase tracking-widest">
+          this counts toward your final score too — revealed at the very end.
+        </p>
 
         {votingLocked && (
           <p className="text-center text-oracle-amber text-xs uppercase tracking-widest">

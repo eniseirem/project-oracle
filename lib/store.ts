@@ -13,13 +13,13 @@ import type {
   Player,
   Vote,
 } from "@/lib/types";
-import { CHARACTERS } from "@/lib/data/characters";
+import { CHARACTERS, SOLUTION } from "@/lib/data/characters";
 import { FACTIONS } from "@/lib/data/factions";
 import { PHASES } from "@/lib/data/phases";
 import { EVIDENCE_SEED } from "@/lib/data/evidence";
 import { ORACLE_MESSAGES_SEED } from "@/lib/data/oracleMessages";
 import { MESSAGE_PRESETS } from "@/lib/data/presets";
-import { CHARACTERS as TEST_CHARACTERS } from "@/lib/data/testScenario/characters";
+import { CHARACTERS as TEST_CHARACTERS, SOLUTION as TEST_SOLUTION } from "@/lib/data/testScenario/characters";
 import { FACTIONS as TEST_FACTIONS } from "@/lib/data/testScenario/factions";
 import { EVIDENCE_SEED as TEST_EVIDENCE_SEED } from "@/lib/data/testScenario/evidence";
 import { ORACLE_MESSAGES_SEED as TEST_ORACLE_MESSAGES_SEED } from "@/lib/data/testScenario/oracleMessages";
@@ -50,6 +50,7 @@ const ACTIVE_CHARACTERS = IS_TEST_SCENARIO ? TEST_CHARACTERS : CHARACTERS;
 const ACTIVE_FACTIONS = IS_TEST_SCENARIO ? TEST_FACTIONS : FACTIONS;
 const ACTIVE_EVIDENCE_SEED = IS_TEST_SCENARIO ? TEST_EVIDENCE_SEED : EVIDENCE_SEED;
 const ACTIVE_ORACLE_MESSAGES_SEED = IS_TEST_SCENARIO ? TEST_ORACLE_MESSAGES_SEED : ORACLE_MESSAGES_SEED;
+const ACTIVE_SOLUTION = IS_TEST_SCENARIO ? TEST_SOLUTION : SOLUTION;
 
 const DATA_FILE = path.join(process.cwd(), ".data", IS_TEST_SCENARIO ? "state.test.json" : "state.json");
 
@@ -110,6 +111,10 @@ function getStateRef(): GameState {
   if (!globalThis.__ORACLE_STATE__.rosterAssignments) {
     globalThis.__ORACLE_STATE__.rosterAssignments = [];
   }
+  // Backfill for state persisted on disk before the points system existed.
+  for (const p of globalThis.__ORACLE_STATE__.players) {
+    if (!p.objectiveCompletions) p.objectiveCompletions = [];
+  }
   return globalThis.__ORACLE_STATE__;
 }
 
@@ -135,6 +140,25 @@ export function resetState(): GameState {
 export function joinGame(realName: string, gameCode: string): Player {
   const state = getStateRef();
   // MVP: any non-empty game code is accepted.
+
+  // RESUME: if someone with this exact name (case/whitespace-insensitive —
+  // same normalization as the roster's usernames) has already joined and
+  // isn't REMOVED, hand back that same player record instead of minting a
+  // new one. This is what lets a guest who accidentally logs out, closes
+  // the tab, or switches devices get back to exactly where they were —
+  // same character, same evidence they've received, same objectives
+  // they've claimed, same vote — just by typing their name/username again.
+  const key = normalizeUsername(realName);
+  const existingPlayer = key
+    ? state.players.find((p) => p.status !== "REMOVED" && normalizeUsername(p.realName) === key)
+    : undefined;
+  if (existingPlayer) {
+    if (existingPlayer.status === "ABSENT") existingPlayer.status = "ACTIVE";
+    if (!existingPlayer.objectiveCompletions) existingPlayer.objectiveCompletions = [];
+    commit(state);
+    return existingPlayer;
+  }
+
   // If the host pre-assigned this username to a specific character (via the
   // host dashboard's roster panel), honor that instead of auto-picking —
   // unless that character is already held by another active player (e.g. a
@@ -158,6 +182,7 @@ export function joinGame(realName: string, gameCode: string): Player {
     lastSeenEvidenceCount: 0,
     lastSeenOracleCount: 0,
     completedObjectives: [],
+    objectiveCompletions: [],
   };
   state.players.push(player);
   commit(state);
@@ -279,6 +304,112 @@ export function markObjectiveToggled(playerId: string, objectiveKey: string) {
   if (idx >= 0) player.completedObjectives.splice(idx, 1);
   else player.completedObjectives.push(objectiveKey);
   commit(state);
+}
+
+// ---------------------------------------------------------------------------
+// Scoring
+// ----------------------------------------------------------------------------
+// Each objective type has a base value; claiming it earlier in the night
+// (lower game phase) adds a bonus on top, capped so there's no reward for
+// claiming something before it's even plausible. Once a claim is locked in
+// its points never change, even if this formula later does — see
+// ObjectiveCompletion in lib/types.ts. A correct final accusation (vote vs.
+// the real SOLUTION for this scenario) adds a one-time bonus of its own,
+// computed in computeLeaderboard — guessing the killer (what players are
+// actually asked) is worth more than guessing the hidden second culprit.
+// ---------------------------------------------------------------------------
+
+const BASE_OBJECTIVE_POINTS: Record<string, number> = {
+  PRIMARY: 30,
+  SECRET: 35,
+  SOCIAL: 20,
+  BONUS: 10,
+};
+
+const KILLER_GUESS_POINTS = 50;
+const MASTERMIND_GUESS_POINTS = 30;
+
+export function computeObjectivePoints(type: string, phaseCompleted: number): number {
+  const base = BASE_OBJECTIVE_POINTS[type] ?? 15;
+  const earlyBonus = Math.max(0, 8 - phaseCompleted) * 3; // up to +24 at phase 0, +0 from phase 8 on
+  return base + earlyBonus;
+}
+
+// Player-initiated, one-way: once claimed it stays claimed (the Game
+// Master can revoke it from the host dashboard, but the player can't
+// un-claim it themselves — that's what keeps the early-claim bonus honest).
+export function claimObjective(playerId: string, characterId: string, type: string) {
+  const state = getStateRef();
+  const player = state.players.find((p) => p.id === playerId);
+  if (!player) return null;
+  if (!player.objectiveCompletions) player.objectiveCompletions = [];
+  const objectiveKey = `${characterId}:${type}`;
+  const existing = player.objectiveCompletions.find((c) => c.objectiveKey === objectiveKey);
+  if (existing) return existing; // already claimed (or revoked) — no-op either way
+  const phaseCompleted = state.game.currentPhase;
+  const completion = {
+    objectiveKey,
+    type: type as any,
+    phaseCompleted,
+    points: computeObjectivePoints(type, phaseCompleted),
+    revoked: false,
+    completedAt: new Date().toISOString(),
+  };
+  player.objectiveCompletions.push(completion);
+  commit(state);
+  return completion;
+}
+
+export function setObjectiveCompletionRevoked(playerId: string, objectiveKey: string, revoked: boolean) {
+  const state = getStateRef();
+  const player = state.players.find((p) => p.id === playerId);
+  if (!player) return;
+  const completion = (player.objectiveCompletions ?? []).find((c) => c.objectiveKey === objectiveKey);
+  if (!completion) return;
+  completion.revoked = revoked;
+  commit(state);
+}
+
+// Host-facing scoreboard: live at any time (so the Game Master can keep an
+// eye on it mid-game and revoke bad claims), including the final-accusation
+// bonus once that player has a vote on file. This is never sent to players
+// directly — the player-facing /api/leaderboard route only exposes it once
+// the Game Master opens the reveal (game.revealOpen), and strips everything
+// but name/points/rank.
+export function computeLeaderboard(state: GameState) {
+  return state.players
+    .filter((p) => p.status !== "REMOVED")
+    .map((p) => {
+      const character = state.characters.find((c) => c.id === p.characterId);
+      const completions = (p.objectiveCompletions ?? []).filter((c) => !c.revoked);
+      const objectivePoints = completions.reduce((sum, c) => sum + c.points, 0);
+      const vote = state.votes.find((v) => v.playerId === p.id);
+      let finalGuessPoints = 0;
+      let finalGuessCorrect: "KILLER" | "MASTERMIND" | "NO" | "NONE" = "NONE";
+      if (vote && vote.accusedCharacterId) {
+        if (vote.accusedCharacterId === ACTIVE_SOLUTION.killerCharacterId) {
+          finalGuessPoints = KILLER_GUESS_POINTS;
+          finalGuessCorrect = "KILLER";
+        } else if (vote.accusedCharacterId === ACTIVE_SOLUTION.mastermindCharacterId) {
+          finalGuessPoints = MASTERMIND_GUESS_POINTS;
+          finalGuessCorrect = "MASTERMIND";
+        } else {
+          finalGuessCorrect = "NO";
+        }
+      }
+      return {
+        playerId: p.id,
+        realName: p.realName,
+        characterName: character?.name ?? "UNASSIGNED",
+        status: p.status,
+        objectivePoints,
+        finalGuessPoints,
+        finalGuessCorrect,
+        total: objectivePoints + finalGuessPoints,
+        completions,
+      };
+    })
+    .sort((a, b) => b.total - a.total);
 }
 
 export function markSeen(playerId: string) {

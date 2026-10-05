@@ -57,8 +57,9 @@ export default function JoinPage() {
               maxLength={40}
             />
             <p className="mt-1 text-oracle-textFaint text-[10px] uppercase tracking-widest">
-              If your host already assigned you a character, use the same name
-              you previewed it with.
+              Use the same name you previewed with. If you get logged out or
+              switch devices, typing it again here picks up exactly where
+              you left off.
             </p>
           </div>
           <div>
