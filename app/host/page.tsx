@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useHostState } from "@/lib/client/useHostState";
 import { HostLogin } from "@/components/host/HostLogin";
 import { PhaseControl } from "@/components/host/PhaseControl";
+import { RosterPanel } from "@/components/host/RosterPanel";
 import { PlayerTable } from "@/components/host/PlayerTable";
 import { MessageComposer } from "@/components/host/MessageComposer";
 import { EvidencePanel } from "@/components/host/EvidencePanel";
@@ -69,6 +70,10 @@ export default function HostPage() {
 
       <div className="max-w-lg mx-auto px-4 pt-5 space-y-6">
         <PhaseControl game={data.game} players={data.players} onChanged={refresh} />
+
+        <section>
+          <RosterPanel characters={data.characters} />
+        </section>
 
         <section>
           <h2 className="font-display text-xs uppercase tracking-[0.2em] text-oracle-textDim mb-2">

@@ -157,6 +157,17 @@ export interface Game {
   createdAt: string;
 }
 
+// A host-made pre-assignment: this username always resolves to this
+// character, whether they're just previewing before the party (/preview)
+// or actually joining it (/join). `username` is normalized (trimmed,
+// lowercased) for matching; `displayUsername` keeps the host's original
+// casing for the roster panel.
+export interface RosterAssignment {
+  username: string;
+  displayUsername: string;
+  characterId: string;
+}
+
 export interface GameState {
   game: Game;
   players: Player[];
@@ -168,4 +179,5 @@ export interface GameState {
   events: GameEvent[];
   votes: Vote[];
   messagePresets: { id: string; label: string; content: string }[];
+  rosterAssignments: RosterAssignment[];
 }

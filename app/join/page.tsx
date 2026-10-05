@@ -56,6 +56,10 @@ export default function JoinPage() {
               className="w-full bg-oracle-panel border border-oracle-border rounded-sm px-4 py-3 text-oracle-text placeholder:text-oracle-textFaint focus:outline-none focus:border-oracle-red/60"
               maxLength={40}
             />
+            <p className="mt-1 text-oracle-textFaint text-[10px] uppercase tracking-widest">
+              If your host already assigned you a character, use the same name
+              you previewed it with.
+            </p>
           </div>
           <div>
             <label className="block text-[11px] uppercase tracking-widest text-oracle-textDim mb-1">

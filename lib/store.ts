@@ -56,6 +56,7 @@ function buildSeedState(): GameState {
     events: [],
     votes: [],
     messagePresets: structuredClone(MESSAGE_PRESETS),
+    rosterAssignments: [],
   };
 }
 
@@ -87,6 +88,10 @@ function getStateRef(): GameState {
   if (!globalThis.__ORACLE_STATE__) {
     globalThis.__ORACLE_STATE__ = loadFromDisk() ?? buildSeedState();
   }
+  // Backfill for state persisted on disk before rosterAssignments existed.
+  if (!globalThis.__ORACLE_STATE__.rosterAssignments) {
+    globalThis.__ORACLE_STATE__.rosterAssignments = [];
+  }
   return globalThis.__ORACLE_STATE__;
 }
 
@@ -112,7 +117,19 @@ export function resetState(): GameState {
 export function joinGame(realName: string, gameCode: string): Player {
   const state = getStateRef();
   // MVP: any non-empty game code is accepted.
-  const character = pickNextCharacter(state.characters, state.players);
+  // If the host pre-assigned this username to a specific character (via the
+  // host dashboard's roster panel), honor that instead of auto-picking —
+  // unless that character is already held by another active player (e.g. a
+  // duplicate join under the same name), in which case fall back to the
+  // normal tier-based pick rather than double-casting a role.
+  const assigned = getCharacterForUsername(realName);
+  const assignedTaken =
+    !!assigned &&
+    state.players.some(
+      (p) => p.status !== "REMOVED" && p.characterId === assigned.id
+    );
+  const character =
+    assigned && !assignedTaken ? assigned : pickNextCharacter(state.characters, state.players);
   const player: Player = {
     id: uuid(),
     realName: realName.trim() || "UNNAMED SUBJECT",
@@ -168,6 +185,48 @@ export function reassignCharacter(playerId: string, characterId?: string) {
     player.characterId = next?.id ?? null;
   }
   commit(state);
+}
+
+// ---------------------------------------------------------------------------
+// Roster (pre-party username → character assignments)
+// ---------------------------------------------------------------------------
+
+function normalizeUsername(username: string): string {
+  return username.trim().toLowerCase();
+}
+
+export function setRosterAssignment(username: string, characterId: string) {
+  const state = getStateRef();
+  const key = normalizeUsername(username);
+  if (!key) return;
+  const existing = state.rosterAssignments.find((r) => r.username === key);
+  if (existing) {
+    existing.characterId = characterId;
+    existing.displayUsername = username.trim();
+  } else {
+    state.rosterAssignments.push({ username: key, displayUsername: username.trim(), characterId });
+  }
+  commit(state);
+}
+
+export function removeRosterAssignment(username: string) {
+  const state = getStateRef();
+  const key = normalizeUsername(username);
+  state.rosterAssignments = state.rosterAssignments.filter((r) => r.username !== key);
+  commit(state);
+}
+
+export function getRosterAssignments() {
+  return getStateRef().rosterAssignments;
+}
+
+export function getCharacterForUsername(username: string): Character | null {
+  const state = getStateRef();
+  const key = normalizeUsername(username);
+  if (!key) return null;
+  const assignment = state.rosterAssignments.find((r) => r.username === key);
+  if (!assignment) return null;
+  return state.characters.find((c) => c.id === assignment.characterId) ?? null;
 }
 
 export function markObjectiveToggled(playerId: string, objectiveKey: string) {
