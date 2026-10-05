@@ -31,7 +31,7 @@ export default function LandingPage() {
       </div>
 
       <p className="mt-16 text-[10px] text-oracle-textFaint uppercase tracking-widest">
-        already assigned a character? <Link href="/preview" className="underline">preview it</Link>
+        before the party: <Link href="/preview" className="underline">pick a username &amp; preview your character</Link>
       </p>
       <p className="mt-3 text-[10px] text-oracle-textFaint uppercase tracking-widest">
         display screen: <Link href="/display" className="underline">/display</Link>

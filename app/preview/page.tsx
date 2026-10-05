@@ -19,35 +19,67 @@ interface PreviewCharacter {
   relationships: { characterId: string; name: string; label: string; note: string }[];
 }
 
+type PreviewStatus = "REGISTERED_PENDING" | "PENDING" | "ASSIGNED";
+
 export default function PreviewPage() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<PreviewStatus | null>(null);
+  const [displayUsername, setDisplayUsername] = useState("");
   const [character, setCharacter] = useState<PreviewCharacter | null>(null);
 
   async function lookup() {
     setError(null);
     setLoading(true);
     setCharacter(null);
+    setStatus(null);
     try {
       const res = await fetch(`/api/preview?username=${encodeURIComponent(username)}`, {
         cache: "no-store",
       });
       const json = await res.json();
       if (!res.ok) {
-        setError(
-          json.error === "NOT ASSIGNED YET"
-            ? "NO CHARACTER ASSIGNED TO THAT USERNAME YET — CHECK WITH YOUR HOST"
-            : json.error || "SOMETHING WENT WRONG"
-        );
+        setError(json.error || "SOMETHING WENT WRONG");
         setLoading(false);
         return;
       }
-      setCharacter(json.character);
+      setStatus(json.status);
+      setDisplayUsername(json.displayUsername || username.trim());
+      if (json.status === "ASSIGNED") {
+        setCharacter(json.character);
+      }
     } catch {
       setError("NETWORK ERROR");
     }
     setLoading(false);
+  }
+
+  if (status === "REGISTERED_PENDING" || status === "PENDING") {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center px-6">
+        <div className="w-full max-w-xs animate-fadeIn text-center">
+          <OracleBrand size="md" />
+          <p className="mt-6 font-display text-lg uppercase tracking-wide text-oracle-text">
+            {displayUsername}
+          </p>
+          <p className="mt-3 text-oracle-textFaint text-[11px] leading-relaxed">
+            {status === "REGISTERED_PENDING"
+              ? "You're registered! Your host hasn't assigned you a character yet — tell them the username above, then check back here."
+              : "Still waiting on your host to assign you a character. Check back soon."}
+          </p>
+          <button
+            onClick={() => {
+              setStatus(null);
+              setUsername("");
+            }}
+            className="mt-8 text-oracle-textDim text-xs uppercase tracking-widest hover:text-oracle-text underline"
+          >
+            try another username
+          </button>
+        </div>
+      </main>
+    );
   }
 
   if (character) {
@@ -87,6 +119,9 @@ export default function PreviewPage() {
                 Accent: {c.accentColor.name}
               </p>
             )}
+            <p className="text-oracle-textFaint text-[10px] mt-1">
+              (optional — wear something close if you feel like it, don't worry if not)
+            </p>
           </div>
 
           <Expandable title="Public Identity" defaultOpen>
@@ -124,20 +159,21 @@ export default function PreviewPage() {
           Pre-Party Preview
         </p>
         <p className="mt-4 text-center text-oracle-textFaint text-[11px] leading-relaxed">
-          If your host already assigned you a character, enter the same
-          username here to see who you'll be — before the night starts.
+          Pick any username you like — first name is fine. Tell your host
+          what you picked, so they know which one to assign a character to.
+          Then come back here any time to check.
         </p>
 
         <div className="mt-8 space-y-4">
           <div>
             <label className="block text-[11px] uppercase tracking-widest text-oracle-textDim mb-1">
-              Username
+              Pick a username
             </label>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && lookup()}
-              placeholder="YOUR USERNAME"
+              placeholder="e.g. your first name"
               className="w-full bg-oracle-panel border border-oracle-border rounded-sm px-4 py-3 text-oracle-text placeholder:text-oracle-textFaint focus:outline-none focus:border-oracle-red/60"
               maxLength={40}
             />
@@ -153,7 +189,7 @@ export default function PreviewPage() {
             disabled={loading || !username.trim()}
             onClick={lookup}
           >
-            {loading ? "CHECKING…" : "VIEW MY CHARACTER"}
+            {loading ? "CHECKING…" : "CONTINUE"}
           </Button>
         </div>
 

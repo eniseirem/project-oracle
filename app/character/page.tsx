@@ -45,6 +45,9 @@ export default function CharacterPage() {
               Accent: {c.accentColor.name}
             </p>
           )}
+          <p className="text-oracle-textFaint text-[10px] mt-1">
+            (optional — wear something close if you feel like it, don't worry if not)
+          </p>
         </div>
 
         <Expandable title="Public Identity" defaultOpen>

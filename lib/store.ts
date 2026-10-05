@@ -19,6 +19,10 @@ import { PHASES } from "@/lib/data/phases";
 import { EVIDENCE_SEED } from "@/lib/data/evidence";
 import { ORACLE_MESSAGES_SEED } from "@/lib/data/oracleMessages";
 import { MESSAGE_PRESETS } from "@/lib/data/presets";
+import { CHARACTERS as TEST_CHARACTERS } from "@/lib/data/testScenario/characters";
+import { FACTIONS as TEST_FACTIONS } from "@/lib/data/testScenario/factions";
+import { EVIDENCE_SEED as TEST_EVIDENCE_SEED } from "@/lib/data/testScenario/evidence";
+import { ORACLE_MESSAGES_SEED as TEST_ORACLE_MESSAGES_SEED } from "@/lib/data/testScenario/oracleMessages";
 import { pickNextCharacter } from "@/lib/characterAssignment";
 
 // ============================================================================
@@ -31,14 +35,28 @@ import { pickNextCharacter } from "@/lib/characterAssignment";
 // This is the one place to swap in a real database later (Redis, Postgres,
 // etc.) without touching any route or UI code — every API route only ever
 // calls the functions exported from this file.
+//
+// SCENARIO TOGGLE: setting ORACLE_SCENARIO=test on a deployment's
+// environment loads the short, unrelated dry-run mystery under
+// lib/data/testScenario/* instead of the real story in lib/data/*. This is
+// meant for a completely separate deployment (a second Render service, or a
+// local run) used to pressure-test the app with 3-4 friends online — it
+// never touches, risks, or mixes with the real deployed game.
 // ============================================================================
 
-const DATA_FILE = path.join(process.cwd(), ".data", "state.json");
+const IS_TEST_SCENARIO = process.env.ORACLE_SCENARIO === "test";
+
+const ACTIVE_CHARACTERS = IS_TEST_SCENARIO ? TEST_CHARACTERS : CHARACTERS;
+const ACTIVE_FACTIONS = IS_TEST_SCENARIO ? TEST_FACTIONS : FACTIONS;
+const ACTIVE_EVIDENCE_SEED = IS_TEST_SCENARIO ? TEST_EVIDENCE_SEED : EVIDENCE_SEED;
+const ACTIVE_ORACLE_MESSAGES_SEED = IS_TEST_SCENARIO ? TEST_ORACLE_MESSAGES_SEED : ORACLE_MESSAGES_SEED;
+
+const DATA_FILE = path.join(process.cwd(), ".data", IS_TEST_SCENARIO ? "state.test.json" : "state.json");
 
 function buildSeedState(): GameState {
   return {
     game: {
-      code: "ORACLE",
+      code: IS_TEST_SCENARIO ? "ORACLETEST" : "ORACLE",
       status: "ACTIVE",
       currentPhase: 0,
       votingOpen: false,
@@ -48,11 +66,11 @@ function buildSeedState(): GameState {
       createdAt: new Date().toISOString(),
     },
     players: [],
-    characters: structuredClone(CHARACTERS),
-    factions: structuredClone(FACTIONS),
+    characters: structuredClone(ACTIVE_CHARACTERS),
+    factions: structuredClone(ACTIVE_FACTIONS),
     phases: structuredClone(PHASES),
-    evidence: structuredClone(EVIDENCE_SEED),
-    messages: structuredClone(ORACLE_MESSAGES_SEED),
+    evidence: structuredClone(ACTIVE_EVIDENCE_SEED),
+    messages: structuredClone(ACTIVE_ORACLE_MESSAGES_SEED),
     events: [],
     votes: [],
     messagePresets: structuredClone(MESSAGE_PRESETS),
@@ -195,6 +213,23 @@ function normalizeUsername(username: string): string {
   return username.trim().toLowerCase();
 }
 
+// Guest-initiated: called when someone types a brand-new username at
+// /preview. Creates a pending (characterId: null) slot if this username
+// hasn't been seen before; if it has, leaves whatever's already there alone
+// (so re-visiting /preview never clobbers a host's assignment). Always
+// returns the resulting assignment.
+export function registerUsername(username: string) {
+  const state = getStateRef();
+  const key = normalizeUsername(username);
+  if (!key) return null;
+  const existing = state.rosterAssignments.find((r) => r.username === key);
+  if (existing) return existing;
+  const created = { username: key, displayUsername: username.trim(), characterId: null };
+  state.rosterAssignments.push(created);
+  commit(state);
+  return created;
+}
+
 export function setRosterAssignment(username: string, characterId: string) {
   const state = getStateRef();
   const key = normalizeUsername(username);
@@ -220,12 +255,19 @@ export function getRosterAssignments() {
   return getStateRef().rosterAssignments;
 }
 
+export function getRosterAssignmentFor(username: string) {
+  const state = getStateRef();
+  const key = normalizeUsername(username);
+  if (!key) return null;
+  return state.rosterAssignments.find((r) => r.username === key) ?? null;
+}
+
 export function getCharacterForUsername(username: string): Character | null {
   const state = getStateRef();
   const key = normalizeUsername(username);
   if (!key) return null;
   const assignment = state.rosterAssignments.find((r) => r.username === key);
-  if (!assignment) return null;
+  if (!assignment || !assignment.characterId) return null;
   return state.characters.find((c) => c.id === assignment.characterId) ?? null;
 }
 
@@ -430,16 +472,15 @@ export function reopenVoting() {
 
 export function submitVote(
   playerId: string,
-  data: { killerCharacterId: string | null; why: string; masterMindCharacterId: string | null }
+  data: { accusedCharacterId: string | null; why: string }
 ) {
   const state = getStateRef();
   if (state.game.votingLocked) return null;
   const existing = state.votes.find((v) => v.playerId === playerId);
   const vote: Vote = {
     playerId,
-    killerCharacterId: data.killerCharacterId,
+    accusedCharacterId: data.accusedCharacterId,
     why: data.why,
-    masterMindCharacterId: data.masterMindCharacterId,
     updatedAt: new Date().toISOString(),
   };
   if (existing) {

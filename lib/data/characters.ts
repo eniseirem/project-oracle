@@ -58,7 +58,8 @@ export const CHARACTERS: Character[] = [
     name: "THE PARTNER",
     tier: "CORE",
     factionId: "faction-inner-circle",
-    costumeSuggestion: "Sharp monochrome suit, a single red pin on the lapel.",
+    costumeSuggestion:
+      "Sharp and put-together, with something visibly red worked in somewhere — a pin, ribbon, bracelet, pocket square, anything. Optional, but it's part of the clue trail; your host will have spares if you need one.",
     accentColor: { name: "Signal Red", hex: "#b2302f" },
     publicBio: "Subject Zero's business partner. Charming in public, exacting in private.",
     secret:
@@ -79,7 +80,7 @@ export const CHARACTERS: Character[] = [
       { phase: 4, title: "THE SPARE KEY", content: "Your spare key is missing from your coat pocket. You last had it at 20:50." },
       { phase: 8, title: "THE NUMBER", content: "A number you don't recognize has texted you all week. You told yourself it didn't matter." },
     ],
-    importantClues: [{ id: "clue-core-02-a", text: "Holds a spare key to the private room." }, { id: "clue-core-02-b", text: "Wears a small red pin on the lapel — the one detail every witness keeps mentioning." }],
+    importantClues: [{ id: "clue-core-02-a", text: "Holds a spare key to the private room." }, { id: "clue-core-02-b", text: "Has something visibly red on them — the one detail every witness keeps mentioning." }],
   },
   {
     id: "core-03",
@@ -111,7 +112,8 @@ export const CHARACTERS: Character[] = [
     name: "THE ARCHITECT",
     tier: "CORE",
     factionId: "faction-inner-circle",
-    costumeSuggestion: "Minimal, precise, monochrome — nothing that draws the eye on purpose.",
+    costumeSuggestion:
+      "Minimal and low-key — neutral colors, nothing flashy. Totally optional; whatever you'd normally wear works fine.",
     accentColor: { name: "Graphite", hex: "#4a4a52" },
     publicBio:
       "An old friend from Subject Zero's grad school days. Does something with AI nobody quite understands, and doesn't explain it when asked twice.",
@@ -125,6 +127,7 @@ export const CHARACTERS: Character[] = [
       { type: "SOCIAL", text: "Get someone to describe ORACLE's \"personality\" back to you without realizing they're describing your own writing." },
     ],
     relationships: [
+      { characterId: "extended-02", label: "Your partner.", note: "He came tonight to support you. He has no idea what he's actually walked into.", revealPhase: 0 },
       { characterId: "core-01", label: "You've met a handful of times.", note: "She's sharper than you'd like.", revealPhase: 6 },
       { characterId: "core-03", label: "Unknown connection.", note: "A journalist is the last thing you need tonight.", revealPhase: 6 },
       { characterId: "extended-08", label: "A colleague of Subject Zero's.", note: "They ask too many polite questions.", revealPhase: 8 },
@@ -204,9 +207,9 @@ export const CHARACTERS: Character[] = [
       { characterId: "optional-01", label: "You were both outside around the same time.", note: "Neither of you have compared notes yet.", revealPhase: 6 },
     ],
     phaseReveals: [
-      { phase: 4, title: "21:13", content: "You check your own notes from tonight. You logged someone leaving by the side door at exactly 21:13, down to the second — and now that you think about it, you remember a glint of red catching the outside light as they passed. Small. Metallic. A pin, maybe." },
+      { phase: 4, title: "21:13", content: "You check your own notes from tonight. You logged someone leaving by the side door at exactly 21:13, down to the second — and now that you think about it, you remember a flash of red catching the outside light as they passed. Hard to say exactly what it was. Small, though. Easy to miss." },
     ],
-    importantClues: [{ id: "clue-core-07-a", text: "Can timestamp 21:13 precisely — was outside stargazing." }, { id: "clue-core-07-b", text: "Remembers a flash of red — a pin — on whoever left at 21:13." }],
+    importantClues: [{ id: "clue-core-07-a", text: "Can timestamp 21:13 precisely — was outside stargazing." }, { id: "clue-core-07-b", text: "Remembers a flash of red — hard to say exactly what — on whoever left at 21:13." }],
   },
   {
     id: "core-08",
@@ -364,15 +367,16 @@ export const CHARACTERS: Character[] = [
     factionId: "faction-outsiders",
     costumeSuggestion: "Elegant all-black outfit, no visible branding.",
     accentColor: { name: "Jet Black", hex: "#15151a" },
-    publicBio: "A plus-one nobody quite remembers inviting.",
+    publicBio: "The Architect's partner. Came along tonight even though he barely knows anyone else here, and is trying hard not to let that show.",
     secret: "You are not who your name tag says you are.",
     whatYouKnow: "You know Subject Zero was quietly paying for a second phone line that never showed up on any shared bill.",
     objectives: [
       { type: "PRIMARY", text: "Keep your real identity from being discovered." },
       { type: "SECRET", text: "Find out who else knows about the second line before the Game Master does." },
-      { type: "SOCIAL", text: "Get invited into a private conversation you weren't part of." },
+      { type: "SOCIAL", text: "Deflect anyone who seems to be getting too curious about what The Architect actually works on." },
     ],
     relationships: [
+      { characterId: "core-04", label: "You're here with her tonight.", note: "You don't know most of these people, but you know her well enough.", revealPhase: 0 },
       { characterId: "core-02", label: "Someone you've seen before but can't place.", note: "", revealPhase: 6 },
       { characterId: "optional-01", label: "A familiar face from somewhere unrelated.", note: "Neither of you have acknowledged it yet.", revealPhase: 8 },
     ],
@@ -401,9 +405,9 @@ export const CHARACTERS: Character[] = [
       { characterId: "core-07", label: "Chatted briefly when they stepped outside.", note: "Nice enough, talked about stars for too long.", revealPhase: 4 },
     ],
     phaseReveals: [
-      { phase: 6, title: "THE PIN", content: "Thinking back to 20:50, the person you served was fidgeting with something on their lapel the whole time they waited for their drink — a small red pin. You didn't think about it again until now." },
+      { phase: 6, title: "SOMETHING RED", content: "Thinking back to 20:50, the person you served was fidgeting with something red the whole time they waited for their drink — small, easy to miss. You didn't think about it again until now." },
     ],
-    importantClues: [{ id: "clue-ext-03-a", text: "Overheard a tense conversation around 20:50." }, { id: "clue-ext-03-b", text: "Noticed the same red lapel pin on the person they served at 20:50." }],
+    importantClues: [{ id: "clue-ext-03-a", text: "Overheard a tense conversation around 20:50." }, { id: "clue-ext-03-b", text: "Noticed the same flash of red on the person they served at 20:50." }],
   },
   {
     id: "extended-04",
@@ -541,9 +545,9 @@ export const CHARACTERS: Character[] = [
       { characterId: "core-07", label: "You were both outside around the same time.", note: "Neither of you have compared notes yet.", revealPhase: 6 },
     ],
     phaseReveals: [
-      { phase: 4, title: "WHAT YOU SAW", content: "You saw someone leave the private room at 21:13 wiping their hands on a napkin. You didn't see their face — but you noticed a small red pin on their lapel, catching the light for just a second." },
+      { phase: 4, title: "WHAT YOU SAW", content: "You saw someone leave the private room at 21:13 wiping their hands on a napkin. You didn't see their face — but you noticed something red on them, catching the light for just a second." },
     ],
-    importantClues: [{ id: "clue-opt-01-a", text: "Witnessed someone leaving the room at 21:13." }, { id: "clue-opt-01-b", text: "Saw a red pin on their lapel, though not their face." }],
+    importantClues: [{ id: "clue-opt-01-a", text: "Witnessed someone leaving the room at 21:13." }, { id: "clue-opt-01-b", text: "Saw something red on them, though not their face." }],
   },
   {
     id: "optional-02",

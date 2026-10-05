@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCharacterForUsername, getState } from "@/lib/store";
+import { getState, getRosterAssignmentFor, registerUsername } from "@/lib/store";
 
-// Public, pre-game character lookup by username. Unlike /api/join, this
-// does NOT create a Player or touch game state at all — it's a read-only
-// preview so a guest can see the character the host assigned them before
-// the party, any time before (or after) the Game Master has started
-// anything. Only usernames the host has pre-assigned on /host return
-// anything; everyone else gets a friendly "not assigned yet".
+// Public, pre-game username self-registration + character lookup. A guest
+// picks ANY username they like here — there's no host step first. If it's
+// brand new, this call registers it (a pending slot with no character yet)
+// so it shows up on the host's Roster panel for them to assign. If it's
+// already registered, this just reports its current status. This never
+// creates a Player or touches the live game roster — it's read/registration
+// only, safe to call any time before (or after) the Game Master has started
+// anything.
 //
-// The payload is deliberately the same subset the printed character sheets
-// show: no phaseReveals (those unlock live, in-app, during the party) and
-// only relationships visible from phase 0 — so previewing early can't spoil
-// what the night still has queued up.
+// Once a character IS assigned, the payload is deliberately the same subset
+// the printed character sheets show: no phaseReveals (those unlock live,
+// in-app, during the party) and only relationships visible from phase 0 —
+// so previewing early can't spoil what the night still has queued up.
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -20,12 +22,25 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "USERNAME REQUIRED" }, { status: 400 });
   }
 
-  const character = getCharacterForUsername(username);
-  if (!character) {
-    return NextResponse.json({ error: "NOT ASSIGNED YET" }, { status: 404 });
+  let assignment = getRosterAssignmentFor(username);
+  const isNew = !assignment;
+  if (!assignment) {
+    assignment = registerUsername(username);
+  }
+
+  if (!assignment || !assignment.characterId) {
+    return NextResponse.json({
+      status: isNew ? "REGISTERED_PENDING" : "PENDING",
+      displayUsername: assignment?.displayUsername ?? username.trim(),
+    });
   }
 
   const state = getState();
+  const character = state.characters.find((c) => c.id === assignment!.characterId);
+  if (!character) {
+    return NextResponse.json({ status: "PENDING", displayUsername: assignment.displayUsername });
+  }
+
   const startingRelationships = character.relationships
     .filter((r) => r.revealPhase === 0)
     .map((r) => {
@@ -39,6 +54,7 @@ export async function GET(req: NextRequest) {
     });
 
   return NextResponse.json({
+    status: "ASSIGNED",
     character: {
       id: character.id,
       name: character.name,

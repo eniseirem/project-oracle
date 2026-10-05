@@ -129,11 +129,16 @@ export interface GameEvent {
   phase: number;
 }
 
+// Players only ever get asked ONE accusation question in-app — "who do you
+// believe is behind what happened tonight?" — on purpose. The killer and the
+// mastermind are two different, fixed story facts (see lib/data/characters.ts)
+// that the Game Master already knows; the vote is just the group's guess, and
+// the fact there were two separate culprits at all is withheld as the final
+// reveal rather than hinted at by the voting UI itself.
 export interface Vote {
   playerId: string;
-  killerCharacterId: string | null;
+  accusedCharacterId: string | null;
   why: string;
-  masterMindCharacterId: string | null;
   updatedAt: string;
 }
 
@@ -157,15 +162,18 @@ export interface Game {
   createdAt: string;
 }
 
-// A host-made pre-assignment: this username always resolves to this
-// character, whether they're just previewing before the party (/preview)
+// A guest picks their own username at /preview (self-registering a slot with
+// no character yet); the host then assigns a character to that username from
+// the roster panel on /host. Once assigned, that username always resolves to
+// that character, whether they're just previewing before the party (/preview)
 // or actually joining it (/join). `username` is normalized (trimmed,
-// lowercased) for matching; `displayUsername` keeps the host's original
-// casing for the roster panel.
+// lowercased) for matching; `displayUsername` keeps the guest's original
+// casing for the roster panel. `characterId` is null while the host hasn't
+// assigned anyone yet.
 export interface RosterAssignment {
   username: string;
   displayUsername: string;
-  characterId: string;
+  characterId: string | null;
 }
 
 export interface GameState {

@@ -14,9 +14,8 @@ export default function VotePage() {
   const [characters, setCharacters] = useState<{ id: string; name: string }[]>([]);
   const [votingOpen, setVotingOpen] = useState(false);
   const [votingLocked, setVotingLocked] = useState(false);
-  const [killer, setKiller] = useState("");
+  const [accused, setAccused] = useState("");
   const [why, setWhy] = useState("");
-  const [mastermind, setMastermind] = useState("");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   useEffect(() => {
@@ -33,9 +32,8 @@ export default function VotePage() {
     setVotingOpen(json.votingOpen);
     setVotingLocked(json.votingLocked);
     if (json.vote) {
-      setKiller(json.vote.killerCharacterId ?? "");
+      setAccused(json.vote.accusedCharacterId ?? "");
       setWhy(json.vote.why ?? "");
-      setMastermind(json.vote.masterMindCharacterId ?? "");
     }
   }
 
@@ -55,9 +53,8 @@ export default function VotePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         playerId,
-        killerCharacterId: killer || null,
+        accusedCharacterId: accused || null,
         why,
-        masterMindCharacterId: mastermind || null,
       }),
     });
     setStatus(res.ok ? "saved" : "error");
@@ -82,7 +79,7 @@ export default function VotePage() {
 
       <div className="max-w-md mx-auto px-6 pt-6 space-y-5">
         <p className="text-center font-display uppercase tracking-widest text-oracle-redBright text-sm">
-          Who killed Subject Zero?
+          Who do you believe is behind what happened tonight?
         </p>
 
         {votingLocked && (
@@ -93,11 +90,11 @@ export default function VotePage() {
 
         <Panel>
           <label className="block text-[11px] uppercase tracking-widest text-oracle-textDim mb-2">
-            Who killed Subject Zero?
+            Your accusation
           </label>
           <select
-            value={killer}
-            onChange={(e) => setKiller(e.target.value)}
+            value={accused}
+            onChange={(e) => setAccused(e.target.value)}
             disabled={votingLocked}
             className="w-full bg-oracle-panelAlt border border-oracle-border rounded-sm px-3 py-3 text-oracle-text disabled:opacity-50"
           >
@@ -123,25 +120,6 @@ export default function VotePage() {
             className="w-full bg-oracle-panelAlt border border-oracle-border rounded-sm px-3 py-2 text-oracle-text text-sm disabled:opacity-50"
             placeholder="A short reason…"
           />
-        </Panel>
-
-        <Panel>
-          <label className="block text-[11px] uppercase tracking-widest text-oracle-textDim mb-2">
-            Who do you believe controls ORACLE?
-          </label>
-          <select
-            value={mastermind}
-            onChange={(e) => setMastermind(e.target.value)}
-            disabled={votingLocked}
-            className="w-full bg-oracle-panelAlt border border-oracle-border rounded-sm px-3 py-3 text-oracle-text disabled:opacity-50"
-          >
-            <option value="">— SELECT —</option>
-            {characters.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
         </Panel>
 
         <Button variant="primary" full disabled={votingLocked || status === "saving"} onClick={submit}>

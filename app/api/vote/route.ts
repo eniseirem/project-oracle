@@ -30,9 +30,8 @@ export async function POST(req: NextRequest) {
   }
 
   const vote = submitVote(playerId, {
-    killerCharacterId: body.killerCharacterId ?? null,
+    accusedCharacterId: typeof body.accusedCharacterId === "string" ? body.accusedCharacterId : null,
     why: typeof body.why === "string" ? body.why : "",
-    masterMindCharacterId: body.masterMindCharacterId ?? null,
   });
   return NextResponse.json({ ok: true, vote });
 }
