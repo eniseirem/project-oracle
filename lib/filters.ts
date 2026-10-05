@@ -99,6 +99,7 @@ export function buildPlayerPayload(state: GameState, player: Player) {
           name: character.name,
           tier: character.tier,
           costumeSuggestion: character.costumeSuggestion,
+          accentColor: character.accentColor,
           publicBio: character.publicBio,
           secret: character.secret,
           whatYouKnow: character.whatYouKnow,

@@ -36,6 +36,15 @@ export default function CharacterPage() {
           <p className="text-oracle-amber text-[11px] uppercase tracking-widest mt-2">
             Costume: {c.costumeSuggestion}
           </p>
+          {c.accentColor && (
+            <p className="text-oracle-textFaint text-[11px] uppercase tracking-widest mt-1 flex items-center justify-center gap-2">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full border border-white/20"
+                style={{ backgroundColor: c.accentColor.hex }}
+              />
+              Accent: {c.accentColor.name}
+            </p>
+          )}
         </div>
 
         <Expandable title="Public Identity" defaultOpen>

@@ -58,12 +58,18 @@ export interface ImportantClue {
   text: string;
 }
 
+export interface AccentColor {
+  name: string; // e.g. "Signal Red" — shown on the character sheet and in-app
+  hex: string; // e.g. "#b2302f" — for swatches/UI only, never the clue itself
+}
+
 export interface Character {
   id: string;
   name: string;
   tier: CharacterTier;
   factionId: string | null;
   costumeSuggestion: string;
+  accentColor: AccentColor;
   publicBio: string;
   secret: string;
   whatYouKnow: string;
