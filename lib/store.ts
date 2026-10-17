@@ -159,19 +159,22 @@ export function joinGame(realName: string, gameCode: string): Player {
     return existingPlayer;
   }
 
-  // If the host pre-assigned this username to a specific character (via the
-  // host dashboard's roster panel), honor that instead of auto-picking —
-  // unless that character is already held by another active player (e.g. a
-  // duplicate join under the same name), in which case fall back to the
-  // normal tier-based pick rather than double-casting a role.
+  // The host assigns characters — a guest never gets one automatically just
+  // by joining. If the host pre-assigned this username to a specific
+  // character (via the host dashboard's roster panel), honor that — unless
+  // that character is already held by another active player (e.g. a
+  // duplicate join under the same name), in which case leave this join
+  // unassigned rather than double-casting a role. Anyone who joins without
+  // a pre-assigned character is created with characterId: null; the host
+  // picks one from the Players tab (REASSIGN CHARACTER) or the Roster
+  // panel, same as any other pending guest.
   const assigned = getCharacterForUsername(realName);
   const assignedTaken =
     !!assigned &&
     state.players.some(
       (p) => p.status !== "REMOVED" && p.characterId === assigned.id
     );
-  const character =
-    assigned && !assignedTaken ? assigned : pickNextCharacter(state.characters, state.players);
+  const character = assigned && !assignedTaken ? assigned : null;
   const player: Player = {
     id: uuid(),
     realName: realName.trim() || "UNNAMED SUBJECT",

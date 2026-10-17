@@ -18,7 +18,25 @@ export default function CharacterPage() {
   }, [error, router]);
 
   if (loading && !data) return null;
-  if (!data || !data.character) return null;
+  if (!data) return null;
+
+  if (!data.character) {
+    return (
+      <main className="min-h-screen pb-16">
+        <AnnouncementOverlay announcement={data.game.activeAnnouncement} />
+        <TopBar title="My Character" phase={data.game.currentPhase} />
+        <div className="max-w-md mx-auto px-6 pt-16 text-center">
+          <p className="font-display text-sm uppercase tracking-widest text-oracle-text">
+            Awaiting Assignment
+          </p>
+          <p className="mt-3 text-oracle-textFaint text-xs leading-relaxed">
+            ORACLE is still processing your intake. Your host hasn't assigned
+            you a character yet — check back in a bit.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   const c = data.character;
 

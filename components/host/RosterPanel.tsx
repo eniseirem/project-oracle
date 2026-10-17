@@ -107,6 +107,10 @@ export function RosterPanel({ characters }: { characters: any[] }) {
         and show up below, waiting on a character. Pick one for each of them —
         they'll see it next time they check /preview, and joining with that
         same username on the night automatically gives them that character.
+        Nobody gets a character automatically — if someone joins on the
+        night before you've assigned them, they land on a "waiting"
+        screen until you pick one here or with REASSIGN CHARACTER on the
+        Players tab.
       </p>
 
       {loaded && pending.length > 0 && (
@@ -144,8 +148,8 @@ export function RosterPanel({ characters }: { characters: any[] }) {
         <p className="text-oracle-textFaint text-[11px] mb-3">
           Nobody's registered a username yet — send guests to{" "}
           <span className="text-oracle-text">/preview</span> to pick one. Guests
-          who join on the night without a pre-assigned character get
-          auto-assigned in tier order as usual.
+          who join on the night without a pre-assigned character will wait
+          on an "awaiting assignment" screen until you pick one for them.
         </p>
       )}
 

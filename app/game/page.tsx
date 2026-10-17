@@ -52,8 +52,14 @@ export default function GamePage() {
             {data.player.status === "ABSENT" ? "MARKED ABSENT" : "SUBJECT"}
           </p>
           <h2 className="font-display text-xl text-oracle-text uppercase tracking-wide mt-1">
-            {data.character?.name ?? "UNASSIGNED"}
+            {data.character?.name ?? "AWAITING ASSIGNMENT"}
           </h2>
+          {!data.character && (
+            <p className="mt-2 text-oracle-textFaint text-[11px] leading-relaxed">
+              Your host hasn't assigned you a character yet. You're in —
+              just check back soon.
+            </p>
+          )}
           <p className="mt-2 inline-block border border-oracle-border rounded-sm px-3 py-1 text-[11px] uppercase tracking-widest text-oracle-amber">
             {phaseLabel(data.game.currentPhase)}
           </p>
