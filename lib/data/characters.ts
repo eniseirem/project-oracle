@@ -40,7 +40,7 @@ export const CHARACTERS: Character[] = [
     costumeSuggestion: "Dark lab coat over formal wear, round tinted glasses.",
     accentColor: { name: "Tinted Glass Blue", hex: "#3d5166" },
     publicBio:
-      "A senior researcher on Subject Zero's team. Precise, guarded, rarely seen without a notebook.",
+      "A senior researcher on Subject Zero's team. Precise, guarded, rarely seen without a notebook. Has a running argument about whether a big enough spreadsheet could ever be said to \"understand\" anything, and will restart it unprompted.",
     secret:
       "Two years ago you found an old, abandoned AI prototype buried in a shared drive — built years earlier by two people who'd clearly given up on it. You didn't give up. You've been quietly running and expanding it ever since. ORACLE is yours now, not whoever originally wrote it. You altered a timestamp on an internal log the night before the party to cover one trace of that work, and you're not sure anyone noticed.",
     whatYouKnow:
@@ -128,7 +128,7 @@ export const CHARACTERS: Character[] = [
       "Minimal and low-key — neutral colors, nothing flashy. Totally optional; whatever you'd normally wear works fine.",
     accentColor: { name: "Graphite", hex: "#4a4a52" },
     publicBio:
-      "An old friend from Subject Zero's grad school days. Does something with AI nobody quite understands, and doesn't explain it when asked twice.",
+      "An old friend from Subject Zero's grad school days. Does something with AI nobody quite understands, and doesn't explain it when asked twice. Will bring up the Chinese Room argument if you let her — confidently, and not entirely unprompted.",
     secret:
       "Years ago, you and Subject Zero built an early prototype of what's now called ORACLE together, in grad school. You both walked away from it when the funding fell through — or so you thought. Tonight, something about the way ORACLE talks feels unsettlingly like your old code, down to specific phrasing choices only you would make. You didn't touch it. You have no idea who did.",
     whatYouKnow:
@@ -191,6 +191,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Land one reading tonight that actually turns out to be true." },
       { type: "SECRET", text: "Stop accidentally spreading rumors with your readings." },
       { type: "SOCIAL", text: "Get someone to ask you for a reading unprompted." },
+      { type: "BONUS", text: "Start a short, polite argument about free will versus fate, then lose interest in who wins." },
     ],
     relationships: [
       { characterId: "core-05", label: "Your mentor.", note: "You'd do anything to impress her.", revealPhase: 0 },
@@ -240,6 +241,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Be the one who recovers the extra word in the voice memo." },
       { type: "SECRET", text: "Decide whether to say what you heard out loud, or keep it to yourself a little longer." },
       { type: "SOCIAL", text: "Get asked to help with something tonight instead of volunteering first." },
+      { type: "BONUS", text: "Work \"garbage in, garbage out\" into a sentence that has nothing to do with data." },
     ],
     relationships: [
       { characterId: "core-07", label: "Friend, different field entirely.", note: "A running debate about whose work is more precise.", revealPhase: 0 },
@@ -339,6 +341,7 @@ export const CHARACTERS: Character[] = [
       { type: "PRIMARY", text: "Figure out who told you to erase the file." },
       { type: "SECRET", text: "Avoid being blamed for the missing file." },
       { type: "SOCIAL", text: "Get someone senior to protect you if this comes out." },
+      { type: "BONUS", text: "Explain what \"gradient descent\" means using only hand gestures, to someone who didn't ask." },
     ],
     relationships: [
       { characterId: "core-01", label: "Reports to you.", note: "", revealPhase: 0 },
