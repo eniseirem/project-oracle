@@ -648,6 +648,14 @@ export function isMessageVisibleToPlayer(
   player: Player
 ): boolean {
   if (!m.sentAt) return false;
+  // Seeded story messages are pre-marked sentAt so the player UI has content
+  // to show from minute one, but they're each tied to a specific story
+  // phase (msg-02 is the murder announcement at phase 3, msg-08 is the
+  // final prediction at phase 8, etc.) and must not spoil ahead of the
+  // Game Master actually reaching that phase. A message composed live via
+  // /host always has `phase` set to whatever phase was current the moment
+  // it was sent, so this never hides a message the host just sent.
+  if (m.phase > state.game.currentPhase) return false;
   if (m.type === "GLOBAL") return true;
   if (m.type === "PRIVATE") return m.recipientPlayerId === player.id;
   if (m.type === "FACTION") {
