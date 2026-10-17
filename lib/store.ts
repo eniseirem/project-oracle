@@ -102,11 +102,53 @@ function persistToDisk(state: GameState) {
 declare global {
   // eslint-disable-next-line no-var
   var __ORACLE_STATE__: GameState | undefined;
+  // eslint-disable-next-line no-var
+  var __ORACLE_AUTO_RESTORE_STARTED__: boolean | undefined;
+}
+
+// True only for a state that looks exactly like a brand-new seed - nobody
+// has registered, joined, or done anything yet. Used to decide whether the
+// background auto-restore below is still safe to apply once it resolves.
+function looksUntouched(s: GameState): boolean {
+  return (
+    s.players.length === 0 &&
+    (s.rosterAssignments ?? []).length === 0 &&
+    s.events.length === 0 &&
+    s.votes.length === 0 &&
+    s.game.currentPhase === 0
+  );
 }
 
 function getStateRef(): GameState {
   if (!globalThis.__ORACLE_STATE__) {
     globalThis.__ORACLE_STATE__ = loadFromDisk() ?? buildSeedState();
+
+    // This is a fresh process - on Render's free tier that almost always
+    // means a restart just wiped memory AND disk. Kick off a BACKGROUND
+    // attempt to pull the last remote backup (see lib/backup.ts) so the
+    // very next requests see real data instead of an empty game, without
+    // making every caller of getState() async. Deliberately not awaited:
+    // the first request into a cold instance (in practice, usually the
+    // keep-alive ping, not a guest) still gets the seed state immediately;
+    // this swaps in the restored state moments later. It only adopts the
+    // backup if nothing has happened on this instance in the meantime -
+    // never clobbers real activity that occurred while the fetch was in
+    // flight, and no-ops entirely if no remote backup is configured.
+    if (!globalThis.__ORACLE_AUTO_RESTORE_STARTED__) {
+      globalThis.__ORACLE_AUTO_RESTORE_STARTED__ = true;
+      fetchRemoteBackup()
+        .then((restored) => {
+          if (!restored) return;
+          if (!globalThis.__ORACLE_STATE__ || !looksUntouched(globalThis.__ORACLE_STATE__)) return;
+          if (!restored.rosterAssignments) restored.rosterAssignments = [];
+          for (const p of restored.players) {
+            if (!p.objectiveCompletions) p.objectiveCompletions = [];
+          }
+          globalThis.__ORACLE_STATE__ = restored;
+          persistToDisk(restored);
+        })
+        .catch(() => {});
+    }
   }
   // Backfill for state persisted on disk before rosterAssignments existed.
   if (!globalThis.__ORACLE_STATE__.rosterAssignments) {
@@ -138,10 +180,12 @@ export function resetState(): GameState {
 }
 
 // Host-triggered recovery: pulls the last remotely-backed-up state (see
-// lib/backup.ts) and makes it the live state. Returns false (and changes
-// nothing) if no remote backup is configured or none was found - this is
-// deliberately never automatic, so a restart can't silently clobber
-// whatever's actually live with a stale backup.
+// lib/backup.ts) and makes it the live state, unconditionally. Returns
+// false (and changes nothing) if no remote backup is configured or none
+// was found. Unlike the background auto-restore in getStateRef() above -
+// which only ever adopts a backup into a still-untouched fresh process -
+// this one is a deliberate manual override for the host to use any time,
+// so it always overwrites whatever's currently live.
 export async function restoreFromRemoteBackup(): Promise<boolean> {
   const restored = await fetchRemoteBackup();
   if (!restored) return false;
