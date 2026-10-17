@@ -26,8 +26,21 @@ export function EmergencyPanel({
   const absentPlayers = players.filter((p) => p.status === "ABSENT");
 
   async function emergency(action: string, extra: Record<string, any> = {}) {
-    await hostPost("/api/host/emergency", { action, ...extra });
+    const res = await hostPost("/api/host/emergency", { action, ...extra });
     onChanged();
+    return res;
+  }
+
+  async function restoreFromBackup() {
+    const res = await emergency("RESTORE_FROM_BACKUP");
+    const json = await res.json().catch(() => null);
+    if (json?.restored) {
+      window.alert("Restored from backup.");
+    } else {
+      window.alert(
+        "No backup found to restore - either none has been configured, or nothing's been saved yet."
+      );
+    }
   }
 
   return (
@@ -148,6 +161,19 @@ export function EmergencyPanel({
             CLEAR ACTIVE ANNOUNCEMENT
           </Button>
         )}
+
+        <ConfirmButton
+          label="RESTORE FROM BACKUP"
+          confirmLabel="CONFIRM: OVERWRITE LIVE STATE WITH LAST BACKUP"
+          variant="danger"
+          onConfirm={restoreFromBackup}
+        />
+        <p className="text-oracle-textFaint text-[10px] leading-relaxed">
+          Only use this if the game visibly reset (empty player list, phase
+          back at 0) after a restart. It replaces everything live right now
+          with the last auto-saved copy — it does nothing if no remote
+          backup is configured.
+        </p>
       </div>
     </Panel>
   );

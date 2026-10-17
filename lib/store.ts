@@ -24,6 +24,7 @@ import { FACTIONS as TEST_FACTIONS } from "@/lib/data/testScenario/factions";
 import { EVIDENCE_SEED as TEST_EVIDENCE_SEED } from "@/lib/data/testScenario/evidence";
 import { ORACLE_MESSAGES_SEED as TEST_ORACLE_MESSAGES_SEED } from "@/lib/data/testScenario/oracleMessages";
 import { pickNextCharacter } from "@/lib/characterAssignment";
+import { backupToRemote, fetchRemoteBackup } from "@/lib/backup";
 
 // ============================================================================
 // IN-MEMORY GAME STATE
@@ -121,6 +122,9 @@ function getStateRef(): GameState {
 function commit(state: GameState) {
   globalThis.__ORACLE_STATE__ = state;
   persistToDisk(state);
+  // Fire-and-forget: never block a request on the remote backup, and never
+  // let a failed backup throw inside a request handler.
+  void backupToRemote(state).catch(() => {});
 }
 
 export function getState(): GameState {
@@ -131,6 +135,22 @@ export function resetState(): GameState {
   const fresh = buildSeedState();
   commit(fresh);
   return fresh;
+}
+
+// Host-triggered recovery: pulls the last remotely-backed-up state (see
+// lib/backup.ts) and makes it the live state. Returns false (and changes
+// nothing) if no remote backup is configured or none was found - this is
+// deliberately never automatic, so a restart can't silently clobber
+// whatever's actually live with a stale backup.
+export async function restoreFromRemoteBackup(): Promise<boolean> {
+  const restored = await fetchRemoteBackup();
+  if (!restored) return false;
+  if (!restored.rosterAssignments) restored.rosterAssignments = [];
+  for (const p of restored.players) {
+    if (!p.objectiveCompletions) p.objectiveCompletions = [];
+  }
+  commit(restored);
+  return true;
 }
 
 // ---------------------------------------------------------------------------

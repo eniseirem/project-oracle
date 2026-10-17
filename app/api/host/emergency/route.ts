@@ -9,6 +9,7 @@ import {
   reopenVoting,
   clearAnnouncement,
   moveClueToPlayer,
+  restoreFromRemoteBackup,
 } from "@/lib/store";
 import { checkHostAuth } from "@/lib/hostAuth";
 
@@ -53,6 +54,10 @@ export async function POST(req: NextRequest) {
     case "CLEAR_ANNOUNCEMENT":
       clearAnnouncement();
       break;
+    case "RESTORE_FROM_BACKUP": {
+      const restored = await restoreFromRemoteBackup();
+      return NextResponse.json({ ok: true, restored });
+    }
     default:
       return NextResponse.json({ error: "unknown action" }, { status: 400 });
   }
